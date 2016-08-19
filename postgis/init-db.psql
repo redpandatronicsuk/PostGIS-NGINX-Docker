@@ -1,0 +1,13 @@
+CREATE USER gisdemo WITH PASSWORD 'gisdemo';
+CREATE DATABASE gisdemo;
+GRANT ALL PRIVILEGES ON DATABASE gisdemo TO gisdemo;
+ALTER DATABASE gisdemo OWNER TO gisdemo;
+\c gisdemo
+CREATE EXTENSION postgis;
+CREATE EXTENSION postgis_topology;
+CREATE EXTENSION fuzzystrmatch;
+CREATE EXTENSION postgis_tiger_geocoder;
+CREATE TABLE mappoints ( gid serial NOT NULL, name text, jsondata text, the_geom geometry, CONSTRAINT mappoints_pkey PRIMARY KEY (gid), CONSTRAINT enforce_dims_geom CHECK (st_ndims(the_geom) = 2), CONSTRAINT enforce_geotype_geom CHECK (geometrytype(the_geom) = 'POINT'::text OR the_geom IS NULL),CONSTRAINT enforce_srid_geom CHECK (st_srid(the_geom) = 4326) ) WITH ( OIDS=FALSE );
+CREATE INDEX mappoints_geom_gist ON mappoints USING gist (the_geom);
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO gisdemo;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO gisdemo;
